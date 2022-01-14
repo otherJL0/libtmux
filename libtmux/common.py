@@ -11,10 +11,9 @@ import os
 import re
 import subprocess
 import sys
-from distutils.version import LooseVersion
 
 from . import exc
-from ._compat import MutableMapping, console_to_str, str_from_console
+from ._compat import LooseVersion, MutableMapping, console_to_str, str_from_console
 
 logger = logging.getLogger(__name__)
 

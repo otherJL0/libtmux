@@ -2,11 +2,11 @@
 
 import re
 import sys
-from distutils.version import LooseVersion
 
 import pytest
 
 import libtmux
+from libtmux._compat import LooseVersion
 from libtmux.common import (
     TMUX_MAX_VERSION,
     TMUX_MIN_VERSION,
@@ -41,7 +41,7 @@ def test_allows_master_version(monkeypatch):
     assert has_gte_version(TMUX_MIN_VERSION)
     assert has_gt_version(TMUX_MAX_VERSION), "Greater than the max-supported version"
     assert (
-        "%s-master" % TMUX_MAX_VERSION == get_version()
+        LooseVersion("%s-master" % TMUX_MAX_VERSION) == get_version()
     ), "Is the latest supported version with -master appended"
 
 
@@ -58,7 +58,7 @@ def test_allows_next_version(monkeypatch):
     assert has_minimum_version()
     assert has_gte_version(TMUX_MIN_VERSION)
     assert has_gt_version(TMUX_MAX_VERSION), "Greater than the max-supported version"
-    assert "2.9" == get_version()
+    assert LooseVersion("2.9") == get_version()
 
 
 def test_get_version_openbsd(monkeypatch):
@@ -74,7 +74,7 @@ def test_get_version_openbsd(monkeypatch):
     assert has_gte_version(TMUX_MIN_VERSION)
     assert has_gt_version(TMUX_MAX_VERSION), "Greater than the max-supported version"
     assert (
-        "%s-openbsd" % TMUX_MAX_VERSION == get_version()
+        LooseVersion("%s-openbsd" % TMUX_MAX_VERSION) == get_version()
     ), "Is the latest supported version with -openbsd appended"
 
 
