@@ -499,7 +499,7 @@ testing = ["beautifulsoup4", "coverage", "docutils (>=0.17.0,<0.18.0)", "pytest 
 name = "packaging"
 version = "20.9"
 description = "Core utilities for Python packages"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -669,7 +669,7 @@ python-versions = "*"
 name = "pyparsing"
 version = "3.0.7"
 description = "Python parsing module"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -1101,7 +1101,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "817d72582e460465763cf16520e1cb22d14d38712719ab9b21c220dd8332d383"
+content-hash = "e8a4e8d982d56e587b6e698dd78fcd61f442b741e163c1ca4da79e4d16f88c34"
 
 [metadata.files]
 alabaster = [
