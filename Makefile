@@ -1,4 +1,4 @@
-PY_FILES= find . -type f -not -path '*/\.*' | grep -i '.*[.]py$$' 2> /dev/null
+PY_FILES= find . -type f | grep -i '.*[.]py$$' 2> /dev/null
 
 
 entr_warn:
