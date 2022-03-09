@@ -21,13 +21,13 @@ def test_select_window(session):
 
     # self.assertEqual(2,
     # int(session.attached_window.index))
-    assert int(window_base_index) + 1 == int(window.index)
+    assert window_base_index + 1 == int(window.index)
 
     session.select_window(window_base_index)
     assert window_base_index == int(session.attached_window.index)
 
     session.select_window("testing 3")
-    assert int(window_base_index) + 1 == int(session.attached_window.index)
+    assert window_base_index + 1 == int(session.attached_window.index)
 
     assert len(session._windows) == 2
 

@@ -57,7 +57,7 @@ class EnvironmentMixin:
         proc = self.cmd(*args)
 
         if proc.stderr:
-            if isinstance(proc.stderr, list) and len(proc.stderr) == int(1):
+            if isinstance(proc.stderr, list) and len(proc.stderr) == 1:
                 proc.stderr = proc.stderr[0]
             raise ValueError("tmux set-environment stderr: %s" % proc.stderr)
 
@@ -78,7 +78,7 @@ class EnvironmentMixin:
         proc = self.cmd(*args)
 
         if proc.stderr:
-            if isinstance(proc.stderr, list) and len(proc.stderr) == int(1):
+            if isinstance(proc.stderr, list) and len(proc.stderr) == 1:
                 proc.stderr = proc.stderr[0]
             raise ValueError("tmux set-environment stderr: %s" % proc.stderr)
 
@@ -98,7 +98,7 @@ class EnvironmentMixin:
         proc = self.cmd(*args)
 
         if proc.stderr:
-            if isinstance(proc.stderr, list) and len(proc.stderr) == int(1):
+            if isinstance(proc.stderr, list) and len(proc.stderr) == 1:
                 proc.stderr = proc.stderr[0]
             raise ValueError("tmux set-environment stderr: %s" % proc.stderr)
 
@@ -218,9 +218,8 @@ class tmux_cmd:
         self.stderr = self.stderr.split("\n")
         self.stderr = list(filter(None, self.stderr))  # filter empty values
 
-        if "has-session" in cmd and len(self.stderr):
-            if not self.stdout:
-                self.stdout = self.stderr[0]
+        if "has-session" in cmd and len(self.stderr) and not self.stdout:
+            self.stdout = self.stderr[0]
 
         logger.debug("self.stdout for {}: \n{}".format(" ".join(cmd), self.stdout))
 
@@ -364,13 +363,14 @@ class TmuxRelationalObject:
         .. _backbone.js: http://backbonejs.org/
         .. _.get(): http://backbonejs.org/#Collection-get
         """
-        for child in self.children:
-            if child[self.child_id_attribute] == id:
-                return child
-            else:
-                continue
-
-        return None
+        return next(
+            (
+                child
+                for child in self.children
+                if child[self.child_id_attribute] == id
+            ),
+            None,
+        )
 
 
 def which(

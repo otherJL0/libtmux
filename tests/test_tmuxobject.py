@@ -140,7 +140,7 @@ def test_get_by_id(server, session):
 
         assert get_by_id == session
         assert isinstance(get_by_id, Session)
-        assert server.get_by_id("$" + next(namer)) is None
+        assert server.get_by_id(f"${next(namer)}") is None
 
         # session.get_by_id
         for window in session.windows:
@@ -151,7 +151,7 @@ def test_get_by_id(server, session):
             assert get_by_id == window
             assert isinstance(get_by_id, Window)
 
-            assert session.get_by_id("@" + next(namer)) is None
+            assert session.get_by_id(f"@{next(namer)}") is None
 
             # window.get_by_id
             for pane in window.panes:
@@ -161,4 +161,4 @@ def test_get_by_id(server, session):
 
                 assert get_by_id == pane
                 assert isinstance(get_by_id, Pane)
-                assert window.get_by_id("%" + next(namer)) is None
+                assert window.get_by_id(f"%{next(namer)}") is None

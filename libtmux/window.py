@@ -167,11 +167,8 @@ class Window(TmuxMappingObject, TmuxRelationalObject):
 
         self.server._update_windows()
 
-        if isinstance(value, bool) and value:
-            value = "on"
-        elif isinstance(value, bool) and not value:
-            value = "off"
-
+        if isinstance(value, bool):
+            value = "on" if value else "off"
         cmd = self.cmd(
             "set-window-option",
             "-t{}:{}".format(self.get("session_id"), self.index),
@@ -209,9 +206,8 @@ class Window(TmuxMappingObject, TmuxRelationalObject):
 
         if option:
             return self.show_window_option(option, g=g)
-        else:
-            tmux_args += ("show-window-options",)
-            cmd = self.cmd(*tmux_args).stdout
+        tmux_args += ("show-window-options",)
+        cmd = self.cmd(*tmux_args).stdout
 
         # The shlex.split function splits the args at spaces, while also
         # retaining quoted sub-strings.
@@ -445,11 +441,7 @@ class Window(TmuxMappingObject, TmuxRelationalObject):
         else:
             tmux_args += ("-t%s" % self.panes[0].get("pane_id"),)
 
-        if vertical:
-            tmux_args += ("-v",)
-        else:
-            tmux_args += ("-h",)
-
+        tmux_args += ("-v", ) if vertical else ("-h", )
         if percent is not None:
             tmux_args += ("-p %d" % percent,)
 
@@ -468,20 +460,14 @@ class Window(TmuxMappingObject, TmuxRelationalObject):
 
         pane = self.cmd("split-window", *tmux_args)
 
-        # tmux < 1.7. This is added in 1.7.
         if pane.stderr:
             raise exc.LibTmuxException(pane.stderr)
-            if "pane too small" in pane.stderr:
-                pass
+        pane = pane.stdout[0]
 
-            raise exc.LibTmuxException(pane.stderr, self._info, self.panes)
-        else:
-            pane = pane.stdout[0]
+        pane = dict(zip(pformats, pane.split(formats.FORMAT_SEPARATOR)))
 
-            pane = dict(zip(pformats, pane.split(formats.FORMAT_SEPARATOR)))
-
-            # clear up empty dict
-            pane = {k: v for k, v in pane.items() if v}
+        # clear up empty dict
+        pane = {k: v for k, v in pane.items() if v}
 
         return Pane(window=self, **pane)
 
@@ -494,15 +480,14 @@ class Window(TmuxMappingObject, TmuxRelationalObject):
         -------
         :class:`Pane`
         """
-        for pane in self._panes:
-            if "pane_active" in pane:
-                # for now pane_active is a unicode
-                if pane.get("pane_active") == "1":
-                    return Pane(window=self, **pane)
-                else:
-                    continue
-
-        return []
+        return next(
+            (
+                Pane(window=self, **pane)
+                for pane in self._panes
+                if "pane_active" in pane and pane.get("pane_active") == "1"
+            ),
+            [],
+        )
 
     def _list_panes(self):
         panes = self.server._update_panes()._panes
