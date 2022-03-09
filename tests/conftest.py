@@ -17,8 +17,8 @@ def clear_env(monkeypatch):
     tmux show-environment tests were being interrupted due to a lot of crazy env vars.
     """
     for k, v in os.environ.items():
-        if not any(
-            needle in k.lower()
+        if all(
+            needle not in k.lower()
             for needle in [
                 "window",
                 "tmux",

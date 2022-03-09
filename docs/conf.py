@@ -132,7 +132,7 @@ texinfo_documents = [
 intersphinx_mapping = {"http://docs.python.org/": None}
 
 
-def linkcode_resolve(domain, info):  # NOQA: C901
+def linkcode_resolve(domain, info):    # NOQA: C901
     """
     Determine the URL corresponding to Python object
 
@@ -179,11 +179,7 @@ def linkcode_resolve(domain, info):  # NOQA: C901
     except Exception:
         lineno = None
 
-    if lineno:
-        linespec = "#L%d-L%d" % (lineno, lineno + len(source) - 1)
-    else:
-        linespec = ""
-
+    linespec = "#L%d-L%d" % (lineno, lineno + len(source) - 1) if lineno else ""
     fn = relpath(fn, start=dirname(libtmux.__file__))
 
     if "dev" in about["__version__"]:

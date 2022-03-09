@@ -205,7 +205,7 @@ def test_unset_environment(session):
     [("hey.period", True), ("hey:its a colon", True), ("hey moo", False)],
 )
 def test_periods_raise_badsessionname(server, session, session_name, raises):
-    new_name = session_name + "moo"  # used for rename / switch
+    new_name = f'{session_name}moo'
     if raises:
         with pytest.raises(exc.BadSessionName):
             session.rename_session(new_name)

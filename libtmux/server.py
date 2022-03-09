@@ -333,17 +333,15 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
         """
 
         sessions = self._sessions
-        attached_sessions = list()
+        attached_sessions = []
 
         for session in sessions:
             attached = session.get("session_attached")
-            # for now session_active is a unicode
-            if attached != "0":
-                logger.debug("session %s attached", session.get("name"))
-                attached_sessions.append(session)
-            else:
+            if attached == "0":
                 continue
 
+            logger.debug("session %s attached", session.get("name"))
+            attached_sessions.append(session)
         return [Session(server=self, **s) for s in attached_sessions] or None
 
     def has_session(self, target_session, exact=True):
@@ -515,12 +513,11 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
         session_check_name(session_name)
 
         if self.has_session(session_name):
-            if kill_session:
-                self.cmd("kill-session", "-t%s" % session_name)
-                logger.info("session %s exists. killed it." % session_name)
-            else:
+            if not kill_session:
                 raise exc.TmuxSessionExists("Session named %s exists" % session_name)
 
+            self.cmd("kill-session", "-t%s" % session_name)
+            logger.info("session %s exists. killed it." % session_name)
         logger.debug("creating session %s" % session_name)
 
         sformats = formats.SESSION_FORMATS

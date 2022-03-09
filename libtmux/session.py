@@ -92,7 +92,7 @@ class Session(TmuxMappingObject, TmuxRelationalObject, EnvironmentMixin):
             Renamed from ``.tmux`` to ``.cmd``.
         """
         # if -t is not set in any arg yet
-        if not any("-t" in str(x) for x in args):
+        if all("-t" not in str(x) for x in args):
             # insert -t immediately after 1st arg, as per tmux format
             new_args = [args[0]]
             new_args += ["-t", self.id]
@@ -314,23 +314,20 @@ class Session(TmuxMappingObject, TmuxRelationalObject, EnvironmentMixin):
         -------
         :class:`Window`
         """
-        active_windows = []
-        for window in self._windows:
-            if "window_active" in window:
-                # for now window_active is a unicode
-                if window.get("window_active") == "1":
-                    active_windows.append(Window(session=self, **window))
-                else:
-                    continue
+        active_windows = [
+            Window(session=self, **window)
+            for window in self._windows
+            if "window_active" in window and window.get("window_active") == "1"
+        ]
 
-        if len(active_windows) == int(1):
+        if len(active_windows) == 1:
             return active_windows[0]
         else:
             raise exc.LibTmuxException(
                 "multiple active windows found. %s" % active_windows
             )
 
-        if len(self._windows) == int(0):
+        if len(self._windows) == 0:
             raise exc.LibTmuxException("No Windows")
 
     def select_window(self, target_window):
@@ -398,11 +395,8 @@ class Session(TmuxMappingObject, TmuxRelationalObject, EnvironmentMixin):
             Needs tests
         """
 
-        if isinstance(value, bool) and value:
-            value = "on"
-        elif isinstance(value, bool) and not value:
-            value = "off"
-
+        if isinstance(value, bool):
+            value = "on" if value else "off"
         tmux_args = tuple()
 
         if _global:
@@ -446,9 +440,8 @@ class Session(TmuxMappingObject, TmuxRelationalObject, EnvironmentMixin):
 
         if option:
             return self.show_option(option, _global=_global)
-        else:
-            tmux_args += ("show-options",)
-            session_options = self.cmd(*tmux_args).stdout
+        tmux_args += ("show-options",)
+        session_options = self.cmd(*tmux_args).stdout
 
         session_options = [tuple(item.split(" ")) for item in session_options]
 
