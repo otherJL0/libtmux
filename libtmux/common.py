@@ -11,6 +11,7 @@ import re
 import subprocess
 import sys
 from distutils.version import LooseVersion
+from typing import Any, Dict, Union
 
 from . import exc
 from ._compat import MutableMapping, console_to_str, str_from_console
@@ -316,7 +317,9 @@ class TmuxRelationalObject:
         except IndexError:
             return None
 
-    def where(self, attrs, first=False):
+    def where(
+        self, attrs: Dict[str, Any], first: bool = False
+    ) -> Union[list["TmuxRelationalObject"], "TmuxRelationalObject"]:
         """
         Return objects matching child objects properties.
 
@@ -331,19 +334,19 @@ class TmuxRelationalObject:
         """
 
         # from https://github.com/serkanyersen/underscore.py
-        def by(val, *args):
-            for key, value in attrs.items():
+        def by(val: Dict[str, Any]) -> bool:
+            for key in attrs.keys():
                 try:
                     if attrs[key] != val[key]:
                         return False
                 except KeyError:
                     return False
-                return True
+            return True
 
+        target_children: list["TmuxRelationalObject"] = list(filter(by, self.children))
         if first:
-            return list(filter(by, self.children))[0]
-        else:
-            return list(filter(by, self.children))
+            return target_children[0]
+        return target_children
 
     def get_by_id(self, id):
         """

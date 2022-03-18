@@ -6,6 +6,7 @@ libtmux.session
 """
 import logging
 import os
+from typing import Any, Dict, Optional
 
 from . import exc, formats
 from .common import (
@@ -59,21 +60,22 @@ class Session(TmuxMappingObject, TmuxRelationalObject, EnvironmentMixin):
         self.server._update_windows()
 
     @property
-    def _info(self):
+    def _info(self) -> Optional["Session"]:
 
-        attrs = {"session_id": str(self._session_id)}
+        attrs: Dict[str, Any] = {"session_id": str(self._session_id)}
 
-        def by(val):
-            for key, value in attrs.items():
+        def by(val: Dict[str, Any]) -> bool:
+            for key in attrs.keys():
                 try:
                     if attrs[key] != val[key]:
                         return False
                 except KeyError:
                     return False
-                return True
+            return True
 
+        target_sessions: list["Session"] = list(filter(by, self.server._sessions))
         try:
-            return list(filter(by, self.server._sessions))[0]
+            return target_sessions[0]
         except IndexError as e:
             logger.error(e)
 
